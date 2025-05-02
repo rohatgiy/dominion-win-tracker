@@ -1,0 +1,4 @@
+routes:
+- add player
+- compare stats
+- set up firebase
