@@ -9,11 +9,9 @@ import { useSearchParams } from "next/navigation";
 
 export default function Score() {
 	const searchParams = useSearchParams();
-	const includeMe = searchParams.get("me") === "true" ? true : false;
-	console.log(includeMe);
-	console.log(searchParams.getAll("player"));
-	const players = usePlayers();
-	const colours = useColours(players.length)
+	const playersData = usePlayers(searchParams.getAll("player"));
+	const players = playersData.data ?? [];
+	const colours = useColours(players.length ?? 0)
 	const chartConfig = useChartConfig({ players, colours });
 
 	return (
