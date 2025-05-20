@@ -1,6 +1,5 @@
 "use client";
 
-import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { WinsPieChart } from "@/components/WinsPieChart";
 import { useChartConfig } from "@/hooks/useChartConfig";

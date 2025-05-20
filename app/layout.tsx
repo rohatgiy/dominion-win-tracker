@@ -5,7 +5,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Toaster } from "sonner";
 import { UserProvider } from "@/user/UserContext";
-import { useUserSession } from "@/hooks/useUserSession";
 import { UserSessionInitializer } from "@/components/UserSesssionInitializer";
 
 const geistSans = Geist({

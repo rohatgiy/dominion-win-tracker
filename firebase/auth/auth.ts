@@ -2,8 +2,6 @@ import { auth } from "../firebase-config";
 import {
   onAuthStateChanged as _onAuthStateChanged,
   onIdTokenChanged as _onIdTokenChanged,
-  signInWithPopup,
-  GoogleAuthProvider,
   User,
   NextFn,
 } from "firebase/auth";
@@ -22,16 +20,6 @@ export function onAuthStateChanged(cb: NextFn<User | null>) {
 
 export function onIdTokenChanged(cb: NextFn<User | null>) {
   return _onIdTokenChanged(auth, cb);
-}
-
-export async function signInWithGoogle() {
-  const provider = new GoogleAuthProvider();
-
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (error) {
-    console.error("Error signing in with Google", error);
-  }
 }
 
 export async function signOut() {

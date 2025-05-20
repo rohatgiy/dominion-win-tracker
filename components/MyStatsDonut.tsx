@@ -1,16 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { TrendingUp } from "lucide-react"
 import { Label, Pie, PieChart } from "recharts"
 
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from "@/components/ui/card"
 import {
   ChartConfig,
@@ -60,6 +55,19 @@ export function MyStatsDonut() {
 		{ outcome: "win", amount: wins, fill: "var(--chart-2)" },
 		{ outcome: "tie", amount: ties, fill: "var(--chart-3)" }	
 	]
+
+	if (gamesPlayed === 0) {
+		return (
+			<Card className="flex flex-col">
+				<CardContent className="flex-1 pb-0">
+					<div className="mx-auto aspect-square max-h-[250px] w-full h-full items-center justify-center flex flex-col">
+						<p className="font-semibold text-center">play some games to see your stats!</p>
+					</div>
+					
+				</CardContent>
+			</Card>
+		)
+	}
 	
 	return (
     <Card className="flex flex-col">

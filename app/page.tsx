@@ -1,18 +1,22 @@
 "use client";
 
+import { AddGameForm } from '@/components/AddGameForm';
 import { MyStatsDonut } from '@/components/MyStatsDonut';
 import { Spinner } from '@/components/Spinner';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Dialog,DialogContent, DialogTrigger, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { signOut } from '@/firebase/auth/auth';
 import { useUserSession } from '@/hooks/useUserSession';
 import { useUser } from '@/user/UserContext';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function Home() {
 	const router = useRouter();
 	const userContext = useUser();
 	const loading = useUserSession();
+	const [isAddGameDialogOpen, setIsAddGameDialogOpen] = useState(false);
 
 	if (loading) {
 		return <Spinner />;
@@ -34,7 +38,18 @@ export default function Home() {
 					<p>games played: {userContext.user.gamesPlayed}</p>
 					{/* <Button variant="link" onClick={() => router.push("/score")}></Button> */}
 				</Card>
-				<Button>add game</Button>
+				<Dialog open={isAddGameDialogOpen} onOpenChange={setIsAddGameDialogOpen}>
+					<DialogTrigger asChild>
+						<Button onClick={() => setIsAddGameDialogOpen(true)}>add game</Button>
+					</DialogTrigger>
+					<DialogContent className='sm:max-w-[425px] z-50'>
+						<DialogHeader>
+							<DialogTitle>add game</DialogTitle>
+							<DialogDescription>record the result to a game</DialogDescription>
+						</DialogHeader>
+						<AddGameForm onClose={() => setIsAddGameDialogOpen(false)}/>
+					</DialogContent>
+				</Dialog>
 				<Button onClick={() => signOut()}>logout</Button>
 			</div>
 	
