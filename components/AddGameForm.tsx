@@ -11,7 +11,7 @@ import { Input } from "./ui/input";
 import { Checkbox } from "./ui/checkbox";
 import { Trash } from "lucide-react"; // Import a trash icon from lucide-react or any other icon library
 import { Button } from "./ui/button";
-import { collection, doc, getDocs, increment, query, updateDoc, where } from "firebase/firestore";
+import { collection, doc, getDocs, increment, query, where, writeBatch } from "firebase/firestore";
 import { db } from "@/firebase/firebase-config";
 import { toast } from "sonner";
 import { useUser } from "@/user/UserContext";
@@ -45,6 +45,8 @@ export function AddGameForm({ onClose }: { onClose?: () => void }) {
 		const players = form.getValues("players");
 		const winners = players.filter((player) => player.won);
 
+		const batch = writeBatch(db); // Initialize a Firestore batch
+
 		for (const player of players) {
 			try {
 				// Query Firestore to find the document with the matching dominionUsername
@@ -58,34 +60,41 @@ export function AddGameForm({ onClose }: { onClose?: () => void }) {
 				}
 
 				// Get the document ID
-				console.log(querySnapshot.docs);
 				const docId = querySnapshot.docs[0].id;
-				
+				const docRef = doc(db, "users", docId);
 
-				// Update the document
+				// Add update operations to the batch
 				if (winners.some((winner) => winner.dominionUsername === player.dominionUsername)) {
 					if (winners.length > 1) {
-						await updateDoc(doc(db, "users", docId), {
+						batch.update(docRef, {
 							ties: increment(1),
 							gamesPlayed: increment(1),
 						});
 					} else {
-						await updateDoc(doc(db, "users", docId), {
+						batch.update(docRef, {
 							wins: increment(1),
 							gamesPlayed: increment(1),
 						});
 					}
 				} else {
-					await updateDoc(doc(db, "users", docId), {
+					batch.update(docRef, {
 						gamesPlayed: increment(1),
 					});
 				}
-
-				console.log(`Document for ${player.dominionUsername} updated successfully!`);
 			} catch (error) {
-				console.error(`Error updating document for ${player.dominionUsername}:`, error);
-				toast.error(`Error saving game for player ${player.dominionUsername}.`);
+				console.error(`Error preparing update for ${player.dominionUsername}:`, error);
+				toast.error(`Error preparing game update for player ${player.dominionUsername}.`);
 			}
+		}
+
+		try {
+			// Commit the batch
+			await batch.commit();
+			console.log("Batch updates committed successfully!");
+			toast.success("Game results saved successfully!");
+		} catch (error) {
+			console.error("Error committing batch updates:", error);
+			toast.error("Error saving game results.");
 		}
 
 		onClose?.();
