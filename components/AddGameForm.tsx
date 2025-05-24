@@ -197,7 +197,7 @@ export function AddGameForm({ onClose }: { onClose?: () => void }) {
                             + Add Player
                         </Button>
 						<Button type="submit" disabled={isLoading} className="flex items-center gap-2">
-							{isLoading ? <Spinner colour='white' /> : 'Submit'}
+							{isLoading ? <Spinner colour='white' size='small' /> : 'Submit'}
 						</Button>
                     </div>
                 </form>
