@@ -15,6 +15,8 @@ import { collection, doc, getDocs, increment, query, where, writeBatch } from "f
 import { db } from "@/firebase/firebase-config";
 import { toast } from "sonner";
 import { useUser } from "@/user/UserContext";
+import { useState } from "react";
+import { Spinner } from "./Spinner";
 
 
 const gameSchema = z.object({
@@ -41,7 +43,10 @@ export function AddGameForm({ onClose }: { onClose?: () => void }) {
         },
     });
 
+	const [isLoading, setIsLoading] = useState(false);
+
 	const onSubmit = async () => {
+		setIsLoading(true);
 		const players = form.getValues("players");
 		const winners = players.filter((player) => player.won);
 
@@ -96,8 +101,10 @@ export function AddGameForm({ onClose }: { onClose?: () => void }) {
 			console.error("Error committing batch updates:", error);
 			toast.error("Error saving game results.");
 		}
+		
 
 		onClose?.();
+		setIsLoading(false);
 	};
 
     return (
@@ -160,7 +167,7 @@ export function AddGameForm({ onClose }: { onClose?: () => void }) {
 									<td className="px-4 py-2">
                                         <Button
                                             variant="ghost"
-											disabled={form.watch("players").length <= 2}
+											disabled={form.watch("players").length <= 2 || isLoading}
                                             onClick={() => {
                                                 const updatedPlayers = form
                                                     .getValues("players")
@@ -185,12 +192,13 @@ export function AddGameForm({ onClose }: { onClose?: () => void }) {
                                 ])
                             }
                             className="btn"
+							disabled={isLoading}
                         >
                             + Add Player
                         </Button>
-                        <Button type="submit">
-                            Submit
-                        </Button>
+						<Button type="submit" disabled={isLoading} className="flex items-center gap-2">
+							{isLoading ? <Spinner colour='white' /> : 'Submit'}
+						</Button>
                     </div>
                 </form>
             </Form>
